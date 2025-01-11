@@ -3,17 +3,16 @@ import { resolve } from 'path';
 import { mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 
-
+// Resolve directory paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
 
-
-const dbDirectory = resolve(__dirname, '../'); 
-mkdirSync(dbDirectory, { recursive: true }); 
+const dbDirectory = resolve(__dirname, '../');
+mkdirSync(dbDirectory, { recursive: true });
 
 const dbPath = resolve(dbDirectory, 'database.db');
 
-
+// Create or open the database
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error opening database:', err.message);
@@ -22,7 +21,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-// Create a table
+// Create the `users` table if it doesn't exist
 db.serialize(() => {
   db.run(`
       CREATE TABLE IF NOT EXISTS users (
@@ -40,13 +39,5 @@ db.serialize(() => {
   });
 });
 
-// Close the database connection
-db.close((err) => {
-  if (err) {
-    console.error('Error closing the database:', err.message);
-  } else {
-    console.log('Database connection closed');
-  }
-});
-
+// Keep the database connection open
 export default db;
